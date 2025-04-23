@@ -1,100 +1,76 @@
+
 function parseUplink(device, payload)
-{
-    payload.asJsonObject({"Nombre": "German", "Apellido": "Casais", "Edad": 54, "estaVivo": true, "fNacim": "1970-04-08","direccion":{"Calle": "Zufriategui 3790", "Localidad": "Villa Martelli"}})
+{     
+    //Primer paso, leo lo que me llegó en payload como json porque se que lo que llega es un json    
+    var data = payload.asJsonObject();
+    
+    //Segundo paso, leo el campo Nombre del JSON y lo logueo para ver que leo del JSON
+    var nombre = data.Nombre;
+    var apellido = data.Apellido;
+    var edad = data.Edad;
+    var supervivencia = data.Supervivencia;
+    var fNacimiento = data.FechaNacimiento;
+    var direccion = data.Direccion;
+    var localidad = data.Localidad;         
+
+    env.log("El nombre de la persona es:", nombre);
+    env.log ("el apellido de la persona es: ", apellido);
+    env.log ("La edad de la persona es: ", edad);
+    env.log ("la persona vive: ", supervivencia);
+    env.log ("la fecha de nacimiento de la persona es: ", fNacimiento)
+    env.log ("la dirección de la persona: ", direccion)
+    env.log("la localidad de la persona es: ", localidad)
+
+
+    //Obtengo el endpoint en el que quiero almacenar el dato "nombre de la persona"
+    var epNombre = device.endpoints.byAddress("Ep_add1")
         
-    // This function allows you to parse the received payload, and store the 
-	// data in the respective endpoints. Learn more at https://wiki.cloud.studio/page/200
-
-	// The parameters in this function are:
-	// - device: object representing the device that produced the payload. 
-	//   You can use "device.endpoints" to access the collection 
-	//   of endpoints contained within the device. More information
-	//   at https://wiki.cloud.studio/page/205
-	// - payload: object containing the payload received from the device. More
-	//   information at https://wiki.cloud.studio/page/208.
-
-	// This example is written assuming a temperature and humidity sensor that 
-	// sends a binary payload with temperature in the first byte, humidity 
-	// in the second byte, and battery percentage in the third byte.
-
-/*  
-	// Payload is binary, so it's easier to handle as an array of bytes
-	var bytes = payload.asBytes();
-	
-	// Verify payload contains exactly 3 bytes
-	if (bytes.length != 3)
-		return;
-
-	// Parse and store temperature
-	var temperatureSensor = device.endpoints.byType(endpointType.temperatureSensor);
-	if (temperatureSensor != null)
-	{
-		var temperature = bytes[0] & 0x7f;
-		if (bytes[0] & 0x80)  // Negative temperature?
-			temperature -= 128;
-		temperatureSensor.updateTemperatureSensorStatus(temperature);
-	}
-
-	// Parse and store humidity
-	var humiditySensor = device.endpoints.byType(endpointType.humiditySensor);
-	if (humiditySensor != null)
-	{
-		var humidity = bytes[1];
-		humiditySensor.updateHumiditySensorStatus(humidity);
-	}	  
-	
-	// Parse and store battery percentage
-	var batteryPercentage = bytes[2];
-	device.updateDeviceBattery({ percentage: batteryPercentage });
-*/
-
+    // Si el endpoint existe y el nombre que lei del json no es null, actualizo el endpoint donde quiero almacenar el nuevo estado
+    if (epNombre != null && nombre != null)
+    {
+        epNombre.UpdateTextContainerStatus(nombre)
+        env.log("Endpoint address Ep_add1 actualizado con estado: ", nombre)
+    }    
+    
+    var epApellido = device.endpoints.byAddress("Ep_add2")
+      if (epApellido != null && apellido != null)
+        {
+            epApellido.UpdateTextContainerStatus(apellido)
+            env.log("Endpoint address Ep_add2 actualizado con estado: ", apellido)
+        }
+    
+    var epEdad = device.endpoints.byAddress("Ep_add3")
+      if (epEdad != null && edad != null)
+        {
+            epEdad.UpdateGenericSensorStatus(edad)
+            env.log ("Endpoint address Ep_add3 actualizado con estado: ", edad)
+        }
+        
+    var epSupervivencia = device.endpoints.byAddress ("Ep_add4")
+        if (epSupervivencia != null && supervivencia != null)
+        {
+            epSupervivencia.UpdateGenericSensorStatus(supervivencia)
+            env.log("Endpoint address Ep_add4 actualizado con estado: " , supervivencia)
+        }
+        
+    var epFenac = device.endpoints.byAddress("Ep_add5")
+        if(epFenac != null & fNacimiento != null)
+        {
+            epFenac.UpdateTextContainerStatus(fNacimiento)
+            env.log(fNacimiento)
+        }
+    var epDire = device.endpoints.byAddress("Ep_add6")
+        if(epDire != null & direccion != null)
+        {
+            epDire.UpdateTextContainerStatus(direccion)
+            env.log(direccion)
+        }
+    
+    var epLocal = device.endpoints.byAddress("Ep_add7")
+        if(epLocal != null & localidad != null)
+        {
+            epLocal.UpdateTextContainerStatus(localidad)
+            env.log(localidad)
+        }
 }
 
-function buildDownlink(device, endpoint, command, payload) 
-{ 
-	// This function allows you to convert a command from the platform 
-	// into a payload to be sent to the device.
-	// Learn more at https://wiki.cloud.studio/page/200
-
-	// The parameters in this function are:
-	// - device: object representing the device to which the command will
-	//   be sent. 
-	// - endpoint: endpoint object representing the endpoint to which the 
-	//   command will be sent. May be null if the command is to be sent to 
-	//   the device, and not to an individual endpoint within the device.
-	// - command: object containing the command that needs to be sent. More
-	//   information at https://wiki.cloud.studio/page/1195.
-
-	// This example is written assuming a device that contains a single endpoint, 
-	// of type appliance, that can be turned on, off, and toggled. 
-	// It is assumed that a single byte must be sent in the payload, 
-	// which indicates the type of operation.
-
-/*
-	 payload.port = 25; 	 	 // This device receives commands on LoRaWAN port 25 
-	 payload.buildResult = downlinkBuildResult.ok; 
-
-	 switch (command.type) { 
-	 	 case commandType.onOff: 
-	 	 	 switch (command.onOff.type) { 
-	 	 	 	 case onOffCommandType.turnOn: 
-	 	 	 	 	 payload.setAsBytes([30]); 	 	 // Command ID 30 is "turn on" 
-	 	 	 	 	 break; 
-	 	 	 	 case onOffCommandType.turnOff: 
-	 	 	 	 	 payload.setAsBytes([31]); 	 	 // Command ID 31 is "turn off" 
-	 	 	 	 	 break; 
-	 	 	 	 case onOffCommandType.toggle: 
-	 	 	 	 	 payload.setAsBytes([32]); 	 	 // Command ID 32 is "toggle" 
-	 	 	 	 	 break; 
-	 	 	 	 default: 
-	 	 	 	 	 payload.buildResult = downlinkBuildResult.unsupported; 
-	 	 	 	 	 break; 
-	 	 	 } 
-	 	 	 break; 
-	 	 default: 
-	 	 	 payload.buildResult = downlinkBuildResult.unsupported; 
-	 	 	 break; 
-	 }
-*/
-
-}
