@@ -14,21 +14,31 @@ function getConfiguration(config)
 
 function getEndpoints(deviceAddress, endpoints)
 {
-  endpoints.addEndpoint("Ep_add1", "Nombre", endpointType.textContainer)
-  
-  endpoints.addEndpoint("Ep_add2", "Apellido", endpointType.textContainer)
-  
-  var ep = endpoints.addEndpoint("Ep_add3", "Edad", endpointType.genericSensor)
-  ep.variableTypeId = 1021
-  
-  var ep = endpoints.addEndpoint("Ep_add4","Supervivencia", endpointType.genericSensor) 
-  ep.variableTypeId = 1039
-  
-  endpoints.addEndpoint("Ep_add5", "FechaNacimiento", endpointType.textContainer)
- 
-  endpoints.addEndpoint ("Ep_add6", "Direccion", endpointType.textContainer)
+  // This function allows you to indicate the initial endpoint configuration
+  // when a device is created using this model. This improves end-user 
+  // experience significantly, because it allows the platform to create
+  // all endpoints included in the device automatically when the device
+  // is created.
 
-  endpoints.addEndpoint ("Ep_add7", "Localidad", endpointType.textContainer)
+  // In the code below, two endpoints are created. The first is a
+  // temperature sensor, while the second one is a carbon dioxide sensor.
+
+  var nombre = endpoints.addEndpoint("Ep_add1", "Nombre", endpointType.genericSensor);
+  nombre.variableTypeId = 1165
+  var apellido = endpoints.addEndpoint("Ep_add2", "Apellido", endpointType.genericSensor);
+  apellido.variableTypeId =  1165
+  var anios = addEndpoint("Ep_add3", "Edad", endpointType.genericSensor)
+  anios.variableTypeId = 1166
+  var supervivencia = addEndpoint("Ep_add4", endpointType.genericSensor) 
+  supervivencia.variableTypeId = 1162
+  var fnac = addEndpoint("Ep_add5", "FechaNacimiento", endpointType.genericSensor)
+  fnac.variableTypeId = 1163
+  endpoint.addEndpoint ("Ep_add6", "Direccion", endpointType.asobject)
+    
+}
+
+
+
 }
 
 function validateDeviceAddress(address, result)
